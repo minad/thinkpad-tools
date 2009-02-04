@@ -1,0 +1,8 @@
+I use these thinkpad tools on my X60 tablet. The package contains:
+
+* fanspeed        - Fanspeed scheduler
+* rotate          - Screen rotate script via xrandr with autorotate feature (using hdaps)
+* setBacklight    - Set backlight via ibm acpi interface
+* switchPenButton - Swap tablet pen buttons
+* tabletLauncher  - Tool that shows a handy menu. It can be used to launch applications with the pen if the Laptop is in Tablet mode.
+* xosd            - Notification tool that uses XOSD to display informations on the X11 displays. It can be used as root or from system scripts and automatically finds running X11 displays.
