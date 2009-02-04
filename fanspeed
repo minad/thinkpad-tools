@@ -1,0 +1,38 @@
+#!/usr/bin/python
+
+import sys, time, signal
+sys.path.append('/usr/local/lib/python')
+
+from thinkpad.ThinkpadSensor import ThinkpadSensor
+from thinkpad.DiskSensor import DiskSensor
+from thinkpad.ThinkpadFanDriver import ThinkpadFanDriver
+from thinkpad.FanScheduler import FanScheduler
+
+sensors = [
+	DiskSensor('/dev/sda',                40, 50),
+	ThinkpadSensor('cpu',              1, 45, 60),
+	ThinkpadSensor('near_hdaps',       2, 45, 55), # Same sensor as /sys/bus/platform/drivers/hdaps/hdaps/temp1
+	ThinkpadSensor('pcmcia',           4, 45, 55),
+	ThinkpadSensor('bat_left',         5, 50, 50), # Always 50 C
+	ThinkpadSensor('bat_right',        7, 45, 50),
+	ThinkpadSensor('northbridge_ram',  9, 45, 50),
+	ThinkpadSensor('southbridge',     10, 45, 50)
+]
+
+def quit(a, b):
+	sys.exit(0)
+
+def main():
+	signal.signal(signal.SIGINT,  quit)
+	signal.signal(signal.SIGTERM, quit)
+
+	driver = ThinkpadFanDriver()
+	sched = FanScheduler(driver.min(), driver.max(), sensors)
+
+	while True:
+		sched.update()
+		driver.setLevel(sched.level())
+		time.sleep(2)
+
+main()
+

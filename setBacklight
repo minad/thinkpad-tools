@@ -1,0 +1,31 @@
+#!/usr/bin/python
+
+import sys, os
+sys.path.append('/usr/local/lib/python')
+
+from thinkpad.Util import burp
+
+def usage():
+	print "usage: %s [level n|up|down]" % sys.argv[0]
+	sys.exit(0)
+
+def update(cmd):
+	if os.access('/proc/acpi/ibm/brightness', os.W_OK):
+		burp('/proc/acpi/ibm/brightness', cmd)
+
+def main():
+	if len(sys.argv) < 2:
+		usage()
+	else:
+		cmd = sys.argv[1]
+		if cmd == "level" and len(sys.argv) == 3:
+			update('level %d' % int(sys.argv[2]))
+		elif cmd == "up":
+			update('up')
+		elif cmd == "down":
+			update('down')
+		else:
+			usage()
+
+main()
+

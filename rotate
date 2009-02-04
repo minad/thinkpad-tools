@@ -1,0 +1,54 @@
+#!/usr/bin/python
+
+import sys, re
+sys.path.append('/usr/local/lib/python')
+
+from thinkpad.HDAPSRotater import HDAPSRotater
+from thinkpad import X11
+
+rotations = ['normal', 'right', 'inverted', 'left']
+preferredRotations = rotations
+tabletMode = "inverted+hdaps"
+laptopMode = "normal"
+  
+def main(uid, *foo):
+	rotater = HDAPSRotater()
+	hdaps = False
+	if len(sys.argv) < 2:
+		cr = rotater.getRotation()
+		if cr in preferredRotations:
+			nextIndex = (preferredRotations.index(cr) + 1) % len(preferredRotations)
+		else:
+			nextIndex = 0
+		next = preferredRotations[nextIndex]
+	else:
+		next = sys.argv[1]
+		if not next in rotations:
+			if next == "tablet":
+				next = tabletMode
+			elif next == "laptop":
+				next = laptopMode
+	
+	if not next in rotations:
+		if re.match('\w+\+hdaps$', next) and next[0:-6] in rotations:
+			hdaps = True
+			next = next[0:-6]
+		elif next == "hdaps":
+			hdaps = True
+			next = None
+		else:
+			sys.stderr.write("Mode \"%s\" not allowed. Pick from:\n\
+  - Rotations:       %s\n\
+  - Rotations+hdaps: e.g. inverted+hdaps\n\
+  - Special modes:   tablet, laptop, hdaps\n" % (next, ', '.join(rotations)))
+			sys.exit(-1)
+			
+	if next:
+		rotater.setRotation(next)
+	
+	if hdaps:
+		rotater.start()
+	else:
+		rotater.stop()
+  
+X11.foreachDisplay(main)

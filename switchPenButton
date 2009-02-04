@@ -1,0 +1,36 @@
+#!/usr/bin/python
+
+import sys, time 
+sys.path.append('/usr/local/lib/python')
+
+from thinkpad.Led import Led
+from thinkpad.Wacom import Wacom
+from thinkpad import X11
+
+buttons = [ '2', '3' ]
+
+def main(*foo):
+	wacom = Wacom()
+	if len(sys.argv) < 2:
+		cb = wacom.getPenButton()
+		if cb in buttons:
+			cInd = (buttons.index(cb)+1) % len(buttons)
+			next = buttons[cInd]
+		else:
+			next = buttons[0]
+	else:
+  		next = sys.argv[1]
+    	if not next in buttons:
+    		sys.stderr.write("Button %s not allowed.\n" % next)
+      		sys.exit(-1)
+	
+	wacom.setPenButton(next)
+	led = Led(7)
+	for i in range(0, int(next)):
+ 		led.on()
+		time.sleep(0.2)
+		led.off()
+		time.sleep(0.2)
+
+X11.foreachDisplay(main)
+
